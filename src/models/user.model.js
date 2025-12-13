@@ -15,15 +15,15 @@ const userModel = new Schema(
 
 module.exports = mongoose.model("User", userModel, "users");
 
-// userModel -> đây là Model đại diện cho collection trong MongoDB.
-// users: Đây chính là collection (tương tự như "table" trong SQL).
-// fullName, email, password: Đây là các field (hay còn gọi là thuộc tính/column trong SQL).
-
+// fullName, email, password gọi là field, tương đương với cột (column) bên MySQL/PostgreSQL.
 {
   /*
-                     👉 Tóm lại:
-- Trong MongoDB, ta không gọi là "table" mà gọi là collection.
-- Các fullName, email, password được gọi là field (trường dữ liệu) trong document.
-- Mỗi bản ghi trong collection được gọi là document (tương tự như "row" trong SQL).
+                    | MySQL    | MongoDB    |
+                    | -------- | ---------- |
+                    | Database | Database   |
+                    | Table    | Collection |
+                    | Row      | Document   |
+                    | Column   | Field      |
+
  */
 }

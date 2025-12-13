@@ -5,33 +5,21 @@ const port = 3000;
 const bodyParser = require("body-parser");
 
 const connectDB = require("./config/connectDB");
-
-// tạo biến userModel lấy data từ model-schema
-const userModel = require("./models/user.model");
+const routes = require("./routes/index.routes");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 connectDB();
 
-// register api
-app.post("/api/register", async (req, res) => {
-  // req : lấy thông tin từ người dùng gửi lên
-  // res : thông tin từ server trả về
-  const { fullName, email, password } = req.body;
+routes(app);
+// khi đã các chạy các routes rồi mã vẫn error thì sẽ chạy vào case này:
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
 
-  // lưu thông tin người dùng vào database
-  const newUser = await userModel.create({
-    // nếu các field trong Collection(tương tự Table trong sql) khác tên với{  fullName, email, password } = req.body; thì ->
-    // fullName2: fullName,
-
-    fullName,
-    email,
-    password,
-  });
-  return res.status(201).json({
-    message: "Đăng ký thành công",
-    metadata: newUser,
+  return res.status(statusCode).json({
+    succes: false,
+    message: err.message || "Lỗi server",
   });
 });
 
