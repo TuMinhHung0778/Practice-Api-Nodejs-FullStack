@@ -1,7 +1,15 @@
 // có thể viết theo 2 kiểu class hoặc funtion component
 const bcrypt = require("bcrypt");
 const userModel = require("../models/user.model");
-const { ConflictRequestError } = require("../core/error.response");
+
+const { createAccesToken, createRefreshToken } = require("../auth/checkAuth");
+
+const {
+  ConflictRequestError,
+  NotFoundError,
+  AuthFailureError,
+} = require("../core/error.response");
+
 const { Created } = require("../core/success.response");
 
 class UserController {
@@ -40,7 +48,25 @@ class UserController {
     }).send(res);
   }
 
-  async login(req, res) {}
+  async login(req, res) {
+    const { email, password } = req.body;
+    const findUser = await userModel.findOne({ email });
+    // check email & passwrod có chính xác không
+    if (!findUser) {
+      throw new NotFoundError("Tài khoản hoặc mật khẩu không chính xác!");
+    }
+    // decode password đã hash
+    const isMathPassword = await bcrypt.compare(password, findUser.password);
+    // password : mật khẩu user gửi lên |  findUser.password : mật khẩu user đã mã hóa
+
+    if (!isMathPassword) {
+      throw new AuthFailureError("Tài khoản hoặc mật khẩu không chính xác");
+    }
+
+    // nếu vượt qua hết các case trên thì return về cho user 1 cái token - install library 'npm i jsonwebtoken'
+    const accessToken = createAccesToken({ id: findUser._id });
+    const refreshToken = createRefreshToken({ id: findUser._id });
+  }
 }
 
-module.exports = new UserController();
+module.exports = new UserController(); // 11:56
